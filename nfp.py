@@ -54,8 +54,8 @@ def img_to_nfp(im, new_size=None):
     # convert from np array back to list for faster iteration
     data_2d = data_2d.tolist()
     nfp_im = ""
-    for row in xrange(height):
-        for col in xrange(width):
+    for row in range(height):
+        for col in range(width):
             # convert 0-15 decimal value to hex string (0-f)
             nfp_im += format(data_2d[row][col], "x")
         if row != len(data_2d) - 1:
@@ -69,8 +69,8 @@ def nfp_to_img(nfp):
     width = len(nfp[0])
     im = Image.new("RGB", (width, height))
     px = im.load()
-    for row in xrange(height):
-        for col in xrange(width):
+    for row in range(height):
+        for col in range(width):
             nfp_pixel = nfp[row][col]
             color_idx = int(nfp_pixel, 16)
             pixel_color = CC_COLORS[color_idx]

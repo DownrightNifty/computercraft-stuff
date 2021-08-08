@@ -29,6 +29,7 @@ ext_help = (
     "FORMAT"
 )
 rm_help = "remove the original image after converting"
+dither_help = "enables dithering"
 
 parser = argparse.ArgumentParser(description=desc)
 parser.add_argument("files", help=files_help, nargs='+')
@@ -44,6 +45,7 @@ im_group.add_argument("--format", "-f", help=format_help, metavar="FORMAT",
                       dest="f_format", default="PNG")
 im_group.add_argument("--extension", "-e", help=ext_help)
 im_group.add_argument("--remove", "-r", help=rm_help, action="store_true")
+im_group.add_argument("--dither", "-d", help=dither_help, action="store_true")
 
 args = parser.parse_args()
 
@@ -62,10 +64,13 @@ for file in args.files:
     else:
         im = Image.open(file)
         if args.skip_resize:
-            nfp_file = nfp.img_to_nfp(im)
+            nfp_file = nfp.img_to_nfp(im, dither=1 if args.dither else 0)
         else:
             nfp_file = nfp.img_to_nfp(
-                im, (args.resize_width, args.resize_height))
+                im,
+                (args.resize_width, args.resize_height),
+                dither=1 if args.dither else 0
+            )
         with open("{}.nfp".format(filename), "wt") as f:
             f.write(nfp_file)
     if args.remove:

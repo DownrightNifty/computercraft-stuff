@@ -11,7 +11,7 @@ desc = (
     "versa. Input file type is identified by extension (.nfp, .jpg, etc.), "
     "and output files use the input filename with a new extension."
 )
-file_help = "input file, nfp or image (must have correct file extension)"
+files_help = "input files, nfp or image (must have correct file extension)"
 nfp_desc = "optional arguments when converting image -> nfp"
 skip_help = "skip default behavior of resizing image before conversion"
 width_help = "if resizing, new width (default: {})".format(DEFAULT_WIDTH)
@@ -28,7 +28,7 @@ ext_help = (
 )
 
 parser = argparse.ArgumentParser(description=desc)
-parser.add_argument("file", help=file_help)
+parser.add_argument("files", help=files_help, nargs='+')
 nfp_group = parser.add_argument_group("nfp arguments", description=nfp_desc)
 nfp_group.add_argument("--skip-resize", "-s", help=skip_help,
                        action="store_true", default=False)
@@ -42,22 +42,25 @@ im_group.add_argument("--format", "-f", help=format_help, metavar="FORMAT",
 im_group.add_argument("--extension", "-e", help=ext_help)
 
 args = parser.parse_args()
-filename, ext = os.path.splitext(args.file)
-if not ext:
-    parser.error("filename must have appropriate extension")
-if ext.upper() == ".NFP":
-    with open(args.file, "rt") as f:
-        nfp_file = f.read()
-    im = nfp.nfp_to_img(nfp_file)
-    new_ext = args.f_format.replace(" ", "").lower()
-    if args.extension:
-        new_ext = args.extension
-    im.save("{}.{}".format(filename, new_ext), args.f_format)
-else:
-    im = Image.open(args.file)
-    if args.skip_resize:
-        nfp_file = nfp.img_to_nfp(im)
+
+for file in args.files:
+    filename, ext = os.path.splitext(file)
+    if not ext:
+        parser.error("filename must have appropriate extension")
+    if ext.upper() == ".NFP":
+        with open(file, "rt") as f:
+            nfp_file = f.read()
+        im = nfp.nfp_to_img(nfp_file)
+        new_ext = args.f_format.replace(" ", "").lower()
+        if args.extension:
+            new_ext = args.extension
+        im.save("{}.{}".format(filename, new_ext), args.f_format)
     else:
-        nfp_file = nfp.img_to_nfp(im, (args.resize_width, args.resize_height))
-    with open("{}.nfp".format(filename), "wt") as f:
-        f.write(nfp_file)
+        im = Image.open(file)
+        if args.skip_resize:
+            nfp_file = nfp.img_to_nfp(im)
+        else:
+            nfp_file = nfp.img_to_nfp(
+                im, (args.resize_width, args.resize_height))
+        with open("{}.nfp".format(filename), "wt") as f:
+            f.write(nfp_file)

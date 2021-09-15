@@ -36,12 +36,12 @@ CC_COLORS = (
 # If new_size is provided, image will be resized before conversion.
 # new_size should be a 2-tuple: (width, height).
 # Recommended size for CC monitors at text scale 0.5 is (164, 81).
-def img_to_nfp(im, new_size=None):
+def img_to_nfp(im, new_size=None, dither=0):
     if new_size:
         im = im.resize(new_size)
     # A technique called image quantization is used to reduce the input image's
     # color palette to only the 16 ComputerCraft colors.
-    im = _quantize_with_colors(im, CC_COLORS)
+    im = _quantize_with_colors(im, CC_COLORS, dither)
     # After quantize, im is mode "P" (palletized), so im.getdata() returns a
     # sequence of ints representing indexes into the image's 16-color palette
     # from 0-15 (hex 0-f) for each pixel in the image. This is flattened, so
@@ -78,7 +78,7 @@ def nfp_to_img(nfp):
     return im
 
 # Colors is a list/tuple of 3-item (R, G, B) tuples.
-def _quantize_with_colors(image, colors):
+def _quantize_with_colors(image, colors, dither=0):
     pal_im = Image.new("P", (1, 1))
     color_vals = []
     for color in colors:
@@ -86,5 +86,5 @@ def _quantize_with_colors(image, colors):
             color_vals.append(val)
     color_vals = tuple(color_vals)
     pal_im.putpalette(color_vals + colors[-1] * (256 - len(colors)))
-    image = image.convert("RGB")
-    return image.quantize(palette=pal_im)
+    image = image.convert(mode="RGB")
+    return image.quantize(palette=pal_im,dither=dither)

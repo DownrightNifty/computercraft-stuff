@@ -1,7 +1,5 @@
 # ComputerCraft NFP Image Converter
-A Python program to convert images into NFP images for display on ComputerCraft monitors inside of Minecraft. Inspired by [this program.](http://bit.ly/EricPost)
-
-Feel free to open issues or PRs.
+A Python program to convert images into NFP images for display on ComputerCraft monitors inside of Minecraft. Inspired by [this program.](https://old.reddit.com/r/feedthebeast/comments/1ee4xf/easy_image_to_computercraft_converter/c9zsevu) Feel free to open issues or PRs.
 
 The `nfp.py` module can convert between standard image formats and NFP. When converting from image to NFP, it uses [Pillow](https://python-pillow.org/) to [quantize](https://en.wikipedia.org/wiki/Quantization_(image_processing)) the image, reducing its color palette to the 16 available ComputerCraft colors.
 
